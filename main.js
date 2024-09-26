@@ -5,6 +5,7 @@ winston.info({message: name + ': Starting'});
 winston.info({message: name + ': current working directory ' + process.cwd()});
 winston.info({message: name + ': file location ' + __dirname});
 const fork = require('child_process').fork;
+const { app: electron, BrowserWindow } = require('electron');
 
 /*
 try {
@@ -123,14 +124,30 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
-try {
-  // open a window with the port used by express
-  var win = nw.Window.open("http://localhost:" + 3000, {}, function(win) {
-    win.on('loaded', function() {
-      win.maximize()
-    });
-  });
-} catch (e){
-  // if it fails, probably not using nw, so use openurl
-  require("openurl").open("http://localhost:" + 3000)
+function createWindow () {
+  const win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    // webPreferences: {
+    //   preload: path.join(__dirname, 'preload.js')
+    // }
+  })
+  win.loadURL('http://localhost:3000');
 }
+
+electron.whenReady().then(() => {
+  createWindow()
+
+  electron.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+    }
+  })
+})
+
+electron.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    electron.quit()
+  }
+})
+
