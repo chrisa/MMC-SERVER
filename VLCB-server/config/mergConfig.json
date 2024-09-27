@@ -95,6 +95,9 @@
     },
     "FA63": {
       "name": "CAN1in1out"
+    },
+    "FA64": {
+      "name": "CANCMDDC"
     }
 
   },
